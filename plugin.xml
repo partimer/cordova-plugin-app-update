@@ -4,6 +4,8 @@
     <name>AppUpdate</name>
     <description>Cordova App Update</description>
     <license>Apache 2.0</license>
+    <repo>https://github.com/partimer/cordova-plugin-app-update.git</repo>
+    <issue>https://github.com/partimer/cordova-plugin-app-update/issues</issue>
     <keywords>cordova,update,app,auto,updater</keywords>
     <dependency id="cordova-plugin-appversion-partimer" version="1.0.0" />
     <js-module src="www/AppUpdate.js" name="AppUpdate">
