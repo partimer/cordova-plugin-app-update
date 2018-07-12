@@ -17,7 +17,14 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
-import 	java.nio.charset.StandardCharsets;
+import java.nio.charset.StandardCharsets;
+
+import java.security.cert.CertificateFactory
+import java.security.cert.Certificate
+import java.io.BufferedInputStream;
+import javax.net.ssl.TrustManagerFactory
+import java.security.KeyStore
+import javax.net.ssl.SSLContext
 
 /**
  * Created by LuoWen on 2015/12/14.
@@ -74,14 +81,50 @@ public class CheckUpdateThread implements Runnable {
      */
     private InputStream returnFileIS(String path) {
         LOG.d(TAG, "returnFileIS..");
+        // Get resource id
+        int trusted_id = getResources().getIdentifier('trusted_roots', "raw", getPackageName());
+        
+        // Load CAs from an InputStream
+        // (could be from a resource or ByteArrayInputStream or ...)
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        
 
+        
+        // From res/raw/trusted_roots
+        InputStream caInput = new BufferedInputStream(getResources().openRawResource(trusted_id));
+        Certificate ca;
+        try {
+            ca = cf.generateCertificate(caInput);
+            System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+        } finally {
+            caInput.close();
+        }
+
+        // Create a KeyStore containing our trusted CAs
+        String keyStoreType = KeyStore.getDefaultType();
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);
+        keyStore.setCertificateEntry("ca", ca);
+
+        // Create a TrustManager that trusts the CAs in our KeyStore
+        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+        tmf.init(keyStore);
+
+        // Create an SSLContext that uses our TrustManager
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, tmf.getTrustManagers(), null);
+        
         URL url = null;
         InputStream is = null;
 
         try {
             url = new URL(path);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
-
+            
+            // Associate with Apps trust store
+            urlConnection.setSSLSocketFactory(context.getSocketFactory());
+            
             if(this.authentication.hasCredentials()){
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
             }
