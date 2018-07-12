@@ -82,7 +82,7 @@ public class CheckUpdateThread implements Runnable {
     private InputStream returnFileIS(String path) {
         LOG.d(TAG, "returnFileIS..");
         // Get resource id
-        int trusted_id = getResources().getIdentifier('trusted_roots', "raw", getPackageName());
+        int trusted_id = getResources().getIdentifier("trusted_roots", "raw", getPackageName());
         
         // Load CAs from an InputStream
         // (could be from a resource or ByteArrayInputStream or ...)
