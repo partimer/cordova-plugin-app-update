@@ -19,12 +19,12 @@ import java.util.List;
 
 import java.nio.charset.StandardCharsets;
 
-import java.security.cert.CertificateFactory
-import java.security.cert.Certificate
+import java.security.cert.CertificateFactory;
+import java.security.cert.Certificate;
 import java.io.BufferedInputStream;
-import javax.net.ssl.TrustManagerFactory
-import java.security.KeyStore
-import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory;
+import java.security.KeyStore;
+import javax.net.ssl.SSLContext;
 
 /**
  * Created by LuoWen on 2015/12/14.
