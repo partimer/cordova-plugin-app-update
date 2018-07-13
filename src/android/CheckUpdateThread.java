@@ -27,7 +27,7 @@ import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
 import android.content.res.Resources;
 import javax.security.cert.X509Certificate;
-
+import android.app.Activity;
 
 /**
  * Created by LuoWen on 2015/12/14.
@@ -85,7 +85,7 @@ public class CheckUpdateThread implements Runnable {
     private InputStream returnFileIS(String path) {
         LOG.d(TAG, "returnFileIS..");
         // Get resource id
-        int trusted_id = getResources().getIdentifier("trusted_roots", "raw", getPackageName());
+        int trusted_id = getActivity().getResources().getIdentifier("trusted_roots", "raw", getPackageName());
         
         // Load CAs from an InputStream
         // (could be from a resource or ByteArrayInputStream or ...)
@@ -94,7 +94,7 @@ public class CheckUpdateThread implements Runnable {
 
         
         // From res/raw/trusted_roots
-        InputStream caInput = new BufferedInputStream(getResources().openRawResource(trusted_id));
+        InputStream caInput = new BufferedInputStream(getActivity().getResources().openRawResource(trusted_id));
         Certificate ca;
         try {
             ca = cf.generateCertificate(caInput);
