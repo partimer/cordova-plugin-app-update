@@ -25,7 +25,9 @@ import java.io.BufferedInputStream;
 import javax.net.ssl.TrustManagerFactory;
 import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
-import android.content.res.Resources
+import android.content.res.Resources;
+import javax.security.cert.X509Certificate;
+
 
 /**
  * Created by LuoWen on 2015/12/14.
@@ -124,7 +126,7 @@ public class CheckUpdateThread implements Runnable {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
             
             // Associate with Apps trust store
-            urlConnection.setSSLSocketFactory(context.getSocketFactory());
+            conn.setSSLSocketFactory(context.getSocketFactory());
             
             if(this.authentication.hasCredentials()){
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
