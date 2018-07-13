@@ -173,7 +173,7 @@ public class CheckUpdateThread implements Runnable {
             // Associate with Apps trust store
             conn.setSSLSocketFactory(context.getSocketFactory());
             */
-            HttpsURLConnection conn = HttpsMaker.openHttpsConnection(path, this.mContext);
+            HttpURLConnection conn = HttpsMaker.openHttpsConnection(path, this.mContext);
             
             if(this.authentication.hasCredentials()){
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
