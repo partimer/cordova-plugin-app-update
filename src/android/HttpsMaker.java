@@ -74,7 +74,7 @@ public class HttpsMaker {
             int certCount = 0;
             while(caInput.available() > 0){
                 ca = cf.generateCertificate(caInput);
-                System.out.println("x509 ca=" + ((X509Certificate) ca).getSubjectDN());
+                System.out.println("x509 ca"+String.valueOf(certCount)+"=" + ((X509Certificate) ca).getSubjectDN());
                 keyStore.setCertificateEntry("ca"+String.valueOf(certCount++), ca);
             }
         } finally {
