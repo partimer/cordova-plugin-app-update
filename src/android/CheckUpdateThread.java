@@ -86,6 +86,7 @@ public class CheckUpdateThread implements Runnable {
         // From res/raw/trusted_roots
         InputStream caInput = new BufferedInputStream(this.mContext.getResources().openRawResource(trusted_id));
         Certificate ca;
+        System.out.println("Processing trusted_roots...");
         try {
             ca = cf.generateCertificate(caInput);
             System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
