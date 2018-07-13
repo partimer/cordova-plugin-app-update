@@ -1,4 +1,4 @@
-package com.vaenow.appupdate.android;
+Hpackage com.vaenow.appupdate.android;
 
 import android.AuthenticationOptions;
 import android.content.Context;
@@ -75,6 +75,7 @@ public class CheckUpdateThread implements Runnable {
             mHandler.sendEmptyMessage(Constants.VERSION_COMPARE_START);
         }
     }
+    /*
     private HttpsURLConnection getOpenConnection(String path) throws Exception {
         // Get resource id
         int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
@@ -116,7 +117,7 @@ public class CheckUpdateThread implements Runnable {
         conn.setSSLSocketFactory(context.getSocketFactory());
         return conn;
     }
-    
+    */    
     /**
      * 通过url返回文件
      *
@@ -172,7 +173,7 @@ public class CheckUpdateThread implements Runnable {
             // Associate with Apps trust store
             conn.setSSLSocketFactory(context.getSocketFactory());
             */
-            HttpsURLConnection conn = this.getOpenConnection(path);
+            HttpsURLConnection conn = openHttpsConnection(path, this.mContext);
             
             if(this.authentication.hasCredentials()){
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
