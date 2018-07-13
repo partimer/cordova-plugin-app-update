@@ -64,7 +64,7 @@ public class HttpsMaker {
         tmf.init(keyStore);
 
         // Create an SSLContext that uses our TrustManager
-        SSLContext context = SSLContext.getInstance("Default");
+        SSLContext context = SSLContext.getDefault();
         context.init(null, tmf.getTrustManagers(), null);
 
         URL url = new URL(path);
