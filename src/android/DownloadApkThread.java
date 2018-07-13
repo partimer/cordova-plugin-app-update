@@ -76,6 +76,7 @@ public class DownloadApkThread implements Runnable {
     public void cancelBuildUpdate() {
         this.cancelUpdate = true;
     }
+    /*
     private HttpsURLConnection getOpenConnection(String path) throws Exception {
         // Get resource id
         int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
@@ -116,6 +117,7 @@ public class DownloadApkThread implements Runnable {
         conn.setSSLSocketFactory(context.getSocketFactory());
         return conn;
     }
+    */
     private void downloadAndInstall() {
         try {
             // 判断SD卡是否存在，并且是否具有读写权限
@@ -125,7 +127,7 @@ public class DownloadApkThread implements Runnable {
                 // 创建连接
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 */
-                HttpsURLConnection conn = this.getOpenConnection(this.mHashMap.get("url"));
+                HttpsURLConnection conn = openHttpsConnection(this.mHashMap.get("url"), this.mContext);;
 
                 if(this.authentication.hasCredentials()){
                     conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
