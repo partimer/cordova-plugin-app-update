@@ -76,7 +76,7 @@ public class DownloadApkThread implements Runnable {
     public void cancelBuildUpdate() {
         this.cancelUpdate = true;
     }
-    private HttpsURLConnection getOpenConnection() {
+    private HttpsURLConnection getOpenConnection() throws Exception {
         // Get resource id
         int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
         
@@ -172,6 +172,8 @@ public class DownloadApkThread implements Runnable {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
             e.printStackTrace();
         }
 
