@@ -41,7 +41,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 */
 
 public class HttpsMaker {
-    public static HttpsURLConnection openHttpsConnection(String path, Context mContext) throws Exception {
+    public static HttpURLConnection openHttpsConnection(String path, Context mContext) throws Exception {
 /*        
         // Ensure upto date      
         try {
@@ -96,9 +96,11 @@ public class HttpsMaker {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
         // Associate with Apps trust store
-        ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
-        System.out.println("x509 getSupportedCipherSuites="+Arrays.toString(context.getSocketFactory().getSupportedCipherSuites()));
-        System.out.println("x509 getDefaultCipherSuites="+Arrays.toString(context.getSocketFactory().getDefaultCipherSuites()));
+        if( conn instanceof HttpsURLConnection) {
+            ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
+            System.out.println("x509 getSupportedCipherSuites="+Arrays.toString(context.getSocketFactory().getSupportedCipherSuites()));
+            System.out.println("x509 getDefaultCipherSuites="+Arrays.toString(context.getSocketFactory().getDefaultCipherSuites()));
+        }
         return conn;
     }
 }
