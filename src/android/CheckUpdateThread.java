@@ -75,7 +75,7 @@ public class CheckUpdateThread implements Runnable {
             mHandler.sendEmptyMessage(Constants.VERSION_COMPARE_START);
         }
     }
-    private HttpsURLConnection getOpenConnection() {
+    private HttpsURLConnection getOpenConnection() throws Exception {
         // Get resource id
         int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
         
@@ -186,6 +186,9 @@ public class CheckUpdateThread implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
             mHandler.sendEmptyMessage(Constants.NETWORK_ERROR);
+        } catch (Exception e) {
+            e.printStackTrace();
+            mHandler.sendEmptyMessage(Constants.UNKNOWN_ERROR);
         }
 
         return is;
