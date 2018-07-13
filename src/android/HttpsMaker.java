@@ -93,10 +93,10 @@ public class HttpsMaker {
         context.init(null, tmf.getTrustManagers(), null);
 
         URL url = new URL(path);
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
         // Associate with Apps trust store
-        conn.setSSLSocketFactory(context.getSocketFactory());
+        ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
         return conn;
     }
 }
