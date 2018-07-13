@@ -36,7 +36,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class HttpsMaker {
     public static HttpsURLConnection openHttpsConnection(String path, Context mContext) throws Exception {
         // Get resource id
-        int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
+        int trusted_id = mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
 
         // Load CAs from an InputStream
         // (could be from a resource or ByteArrayInputStream or ...)
