@@ -33,8 +33,13 @@ import java.security.cert.X509Certificate;
 import android.app.Activity;
 import javax.net.ssl.HttpsURLConnection;
 
+import com.google.android.gms.security.ProviderInstaller;
+
 public class HttpsMaker {
     public static HttpsURLConnection openHttpsConnection(String path, Context mContext) throws Exception {
+        // Ensure upto date
+        ProviderInstaller.installIfNeeded(mContext);
+        
         // Get resource id
         int trusted_id = mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
 
@@ -45,9 +50,10 @@ public class HttpsMaker {
         // From res/raw/trusted_roots
         InputStream caInput = new BufferedInputStream(mContext.getResources().openRawResource(trusted_id));
         Certificate ca;
+        System.out.println("Processing trusted_roots for x509...");
         try {
           ca = cf.generateCertificate(caInput);
-          System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+          System.out.println("x509 ca=" + ((X509Certificate) ca).getSubjectDN());
         } finally {
           caInput.close();
         }
