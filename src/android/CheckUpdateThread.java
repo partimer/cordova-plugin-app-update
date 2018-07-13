@@ -26,7 +26,7 @@ import javax.net.ssl.TrustManagerFactory;
 import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
 import android.content.res.Resources;
-import javax.security.cert.X509Certificate;
+import java.security.cert.X509Certificate;
 import android.app.Activity;
 
 /**
