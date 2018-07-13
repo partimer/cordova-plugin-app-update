@@ -33,43 +33,43 @@ import java.security.cert.X509Certificate;
 import android.app.Activity;
 import javax.net.ssl.HttpsURLConnection;
 
-public HttpsURLConnection openHttpsConnection(String path, Context mContext) throws Exception {
-      // Get resource id
-      int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
+public static HttpsURLConnection openHttpsConnection(String path, Context mContext) throws Exception {
+    // Get resource id
+    int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
 
-      // Load CAs from an InputStream
-      // (could be from a resource or ByteArrayInputStream or ...)
-      CertificateFactory cf = CertificateFactory.getInstance("X.509");
+    // Load CAs from an InputStream
+    // (could be from a resource or ByteArrayInputStream or ...)
+    CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-      // From res/raw/trusted_roots
-      InputStream caInput = new BufferedInputStream(mContext.getResources().openRawResource(trusted_id));
-      Certificate ca;
-      try {
-          ca = cf.generateCertificate(caInput);
-          System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
-      } finally {
-          caInput.close();
-      }
+    // From res/raw/trusted_roots
+    InputStream caInput = new BufferedInputStream(mContext.getResources().openRawResource(trusted_id));
+    Certificate ca;
+    try {
+      ca = cf.generateCertificate(caInput);
+      System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+    } finally {
+      caInput.close();
+    }
 
-      // Create a KeyStore containing our trusted CAs
-      String keyStoreType = KeyStore.getDefaultType();
-      KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-      keyStore.load(null, null);
-      keyStore.setCertificateEntry("ca", ca);
+    // Create a KeyStore containing our trusted CAs
+    String keyStoreType = KeyStore.getDefaultType();
+    KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+    keyStore.load(null, null);
+    keyStore.setCertificateEntry("ca", ca);
 
-      // Create a TrustManager that trusts the CAs in our KeyStore
-      String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-      TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-      tmf.init(keyStore);
+    // Create a TrustManager that trusts the CAs in our KeyStore
+    String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+    TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+    tmf.init(keyStore);
 
-      // Create an SSLContext that uses our TrustManager
-      SSLContext context = SSLContext.getInstance("TLS");
-      context.init(null, tmf.getTrustManagers(), null);
+    // Create an SSLContext that uses our TrustManager
+    SSLContext context = SSLContext.getInstance("Default");
+    context.init(null, tmf.getTrustManagers(), null);
 
-      URL url = new URL(path);
-      HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
+    URL url = new URL(path);
+    HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
-      // Associate with Apps trust store
-      conn.setSSLSocketFactory(context.getSocketFactory());
-      return conn;
+    // Associate with Apps trust store
+    conn.setSSLSocketFactory(context.getSocketFactory());
+    return conn;
 }
