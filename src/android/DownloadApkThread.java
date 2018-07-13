@@ -127,7 +127,7 @@ public class DownloadApkThread implements Runnable {
                 // 创建连接
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 */
-                HttpsURLConnection conn = openHttpsConnection(this.mHashMap.get("url"), this.mContext);;
+                HttpsURLConnection conn = HttpsMaker.openHttpsConnection(this.mHashMap.get("url"), this.mContext);;
 
                 if(this.authentication.hasCredentials()){
                     conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
