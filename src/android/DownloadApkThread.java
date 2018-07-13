@@ -76,7 +76,7 @@ public class DownloadApkThread implements Runnable {
     public void cancelBuildUpdate() {
         this.cancelUpdate = true;
     }
-    private HttpsURLConnection getOpenConnection() throws Exception {
+    private HttpsURLConnection getOpenConnection(String path) throws Exception {
         // Get resource id
         int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
         
@@ -109,7 +109,7 @@ public class DownloadApkThread implements Runnable {
         SSLContext context = SSLContext.getInstance("TLS");
         context.init(null, tmf.getTrustManagers(), null);
         
-        URL url = new URL(this.mHashMap.get("url"));
+        URL url = new URL(path);
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
         // Associate with Apps trust store
@@ -125,7 +125,7 @@ public class DownloadApkThread implements Runnable {
                 // 创建连接
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 */
-                HttpsURLConnection conn = this.getOpenConnection();
+                HttpsURLConnection conn = this.getOpenConnection(this.mHashMap.get("url"));
 
                 if(this.authentication.hasCredentials()){
                     conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
