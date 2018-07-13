@@ -108,7 +108,7 @@ public class CheckUpdateThread implements Runnable {
         SSLContext context = SSLContext.getInstance("TLS");
         context.init(null, tmf.getTrustManagers(), null);
         
-        url = new URL(mHashMap.get("url"));
+        URL url = new URL(this.mHashMap.get("url"));
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
         // Associate with Apps trust store
