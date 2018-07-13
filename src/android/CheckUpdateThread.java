@@ -82,10 +82,10 @@ public class CheckUpdateThread implements Runnable {
      * @param path
      * @return
      */
-    private InputStream returnFileIS(Context mContext, String path) {
+    private InputStream returnFileIS(String path) {
         LOG.d(TAG, "returnFileIS..");
         // Get resource id
-        int trusted_id = mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
+        int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
         
         // Load CAs from an InputStream
         // (could be from a resource or ByteArrayInputStream or ...)
@@ -94,7 +94,7 @@ public class CheckUpdateThread implements Runnable {
 
         
         // From res/raw/trusted_roots
-        InputStream caInput = new BufferedInputStream(mContext.getResources().openRawResource(trusted_id));
+        InputStream caInput = new BufferedInputStream(this.mContext.getResources().openRawResource(trusted_id));
         Certificate ca;
         try {
             ca = cf.generateCertificate(caInput);
@@ -179,10 +179,10 @@ public class CheckUpdateThread implements Runnable {
      *
      * @return
      */
-    private int getVersionCodeRemote(Context context) {
+    private int getVersionCodeRemote() {
         int versionCodeRemote = 0;
 
-        InputStream is = returnFileIS(context, updateXmlUrl);
+        InputStream is = returnFileIS(updateXmlUrl);
         // 解析XML文件。 由于XML文件比较小，因此使用DOM方式进行解析
         ParseXmlService service = new ParseXmlService();
         try {
