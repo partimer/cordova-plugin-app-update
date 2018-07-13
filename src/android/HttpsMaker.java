@@ -57,28 +57,31 @@ public class HttpsMaker {
         // Get resource id
         int trusted_id = mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
 
+        // Create a KeyStore containing our trusted CAs
+        String keyStoreType = KeyStore.getDefaultType();
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);
+        
         // Load CAs from an InputStream
         // (could be from a resource or ByteArrayInputStream or ...)
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
         // From res/raw/trusted_roots
         InputStream caInput = new BufferedInputStream(mContext.getResources().openRawResource(trusted_id));
-        Certificate ca = null;
+        Certificate ca;
         System.out.println("Processing trusted_roots for x509...");
         try {
+            int certCount = 0;
             while(caInput.available() > 0){
                 ca = cf.generateCertificate(caInput);
                 System.out.println("x509 ca=" + ((X509Certificate) ca).getSubjectDN());
+                keyStore.setCertificateEntry("ca"+String.valueOf(certCount++), ca);
             }
         } finally {
           caInput.close();
         }
 
-        // Create a KeyStore containing our trusted CAs
-        String keyStoreType = KeyStore.getDefaultType();
-        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        keyStore.load(null, null);
-        keyStore.setCertificateEntry("ca", ca);
+
 
         // Create a TrustManager that trusts the CAs in our KeyStore
         String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
