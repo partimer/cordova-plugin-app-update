@@ -28,7 +28,7 @@ import javax.net.ssl.SSLContext;
 import android.content.res.Resources;
 import java.security.cert.X509Certificate;
 import android.app.Activity;
-
+import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by LuoWen on 2015/12/14.
  */
@@ -123,7 +123,7 @@ public class CheckUpdateThread implements Runnable {
 
         try {
             url = new URL(path);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
             
             // Associate with Apps trust store
             conn.setSSLSocketFactory(context.getSocketFactory());
