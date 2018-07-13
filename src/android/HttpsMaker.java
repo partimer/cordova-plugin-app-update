@@ -63,7 +63,7 @@ public class HttpsMaker {
 
         // From res/raw/trusted_roots
         InputStream caInput = new BufferedInputStream(mContext.getResources().openRawResource(trusted_id));
-        Certificate ca;
+        Certificate ca = null;
         System.out.println("Processing trusted_roots for x509...");
         try {
             while(caInput.available() > 0){
