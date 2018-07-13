@@ -32,6 +32,8 @@ import android.content.res.Resources;
 import java.security.cert.X509Certificate;
 import android.app.Activity;
 import javax.net.ssl.HttpsURLConnection;
+
+import java.util.Arrays;
 /*
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -98,8 +100,8 @@ public class HttpsMaker {
         // Associate with Apps trust store
         if( conn instanceof HttpsURLConnection) {
             ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
-            System.out.println("x509 getSupportedCipherSuites="+Arrays.toString(context.getSocketFactory().getSupportedCipherSuites()));
-            System.out.println("x509 getDefaultCipherSuites="+Arrays.toString(context.getSocketFactory().getDefaultCipherSuites()));
+            System.out.println("x509 getSupportedCipherSuites="+Arrays.toString(context.getSocketFactory().getSupportedCipherSuites()) );
+            System.out.println("x509 getDefaultCipherSuites="+Arrays.toString(context.getSocketFactory().getDefaultCipherSuites()) );
         }
         return conn;
     }
