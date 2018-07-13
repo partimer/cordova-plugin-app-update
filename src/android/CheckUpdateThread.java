@@ -160,9 +160,9 @@ public class CheckUpdateThread implements Runnable {
         context.init(null, tmf.getTrustManagers(), null);
         
         URL url = null;
-        InputStream is = null;
         */
-
+        InputStream is = null;
+        
         try {
             /*
             url = new URL(path);
