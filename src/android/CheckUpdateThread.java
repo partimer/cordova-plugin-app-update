@@ -1,4 +1,4 @@
-Hpackage com.vaenow.appupdate.android;
+package com.vaenow.appupdate.android;
 
 import android.AuthenticationOptions;
 import android.content.Context;
