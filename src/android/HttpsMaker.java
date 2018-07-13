@@ -97,6 +97,7 @@ public class HttpsMaker {
 
         // Associate with Apps trust store
         ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
+        System.out.println("x509 getSupportedCipherSuites="+Arrays.toString(context.getSocketFactory().getSupportedCipherSuites()));
         return conn;
     }
 }
