@@ -75,7 +75,47 @@ public class CheckUpdateThread implements Runnable {
             mHandler.sendEmptyMessage(Constants.VERSION_COMPARE_START);
         }
     }
+    private HttpsURLConnection getOpenConnection() {
+        // Get resource id
+        int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
+        
+        // Load CAs from an InputStream
+        // (could be from a resource or ByteArrayInputStream or ...)
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        
+        // From res/raw/trusted_roots
+        InputStream caInput = new BufferedInputStream(this.mContext.getResources().openRawResource(trusted_id));
+        Certificate ca;
+        try {
+            ca = cf.generateCertificate(caInput);
+            System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+        } finally {
+            caInput.close();
+        }
 
+        // Create a KeyStore containing our trusted CAs
+        String keyStoreType = KeyStore.getDefaultType();
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);
+        keyStore.setCertificateEntry("ca", ca);
+
+        // Create a TrustManager that trusts the CAs in our KeyStore
+        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+        tmf.init(keyStore);
+
+        // Create an SSLContext that uses our TrustManager
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, tmf.getTrustManagers(), null);
+        
+        url = new URL(mHashMap.get("url"));
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
+
+        // Associate with Apps trust store
+        conn.setSSLSocketFactory(context.getSocketFactory());
+        return conn;
+    }
+    
     /**
      * 通过url返回文件
      *
@@ -84,6 +124,7 @@ public class CheckUpdateThread implements Runnable {
      */
     private InputStream returnFileIS(String path) {
         LOG.d(TAG, "returnFileIS..");
+        /*
         // Get resource id
         int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
         
@@ -120,13 +161,17 @@ public class CheckUpdateThread implements Runnable {
         
         URL url = null;
         InputStream is = null;
+        */
 
         try {
+            /*
             url = new URL(path);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
             
             // Associate with Apps trust store
             conn.setSSLSocketFactory(context.getSocketFactory());
+            */
+            HttpsURLConnection conn = this.getOpenConnection();
             
             if(this.authentication.hasCredentials()){
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
