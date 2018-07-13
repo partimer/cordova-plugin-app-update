@@ -25,6 +25,7 @@ import java.io.BufferedInputStream;
 import javax.net.ssl.TrustManagerFactory;
 import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
+import android.content.res.Resources
 
 /**
  * Created by LuoWen on 2015/12/14.
