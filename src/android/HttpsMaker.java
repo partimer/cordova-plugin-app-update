@@ -32,16 +32,17 @@ import android.content.res.Resources;
 import java.security.cert.X509Certificate;
 import android.app.Activity;
 import javax.net.ssl.HttpsURLConnection;
-
+/*
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+*/
 
 public class HttpsMaker {
     public static HttpsURLConnection openHttpsConnection(String path, Context mContext) throws Exception {
-        
+/*        
         // Ensure upto date      
         try {
             ProviderInstaller.installIfNeeded(mContext);
@@ -52,7 +53,7 @@ public class HttpsMaker {
         } catch (GooglePlayServicesNotAvailableException e) {
             Log.e("SecurityException", "Google Play Services not available.");
         }
-        
+  */      
         // Get resource id
         int trusted_id = mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
 
@@ -94,3 +95,4 @@ public class HttpsMaker {
         return conn;
     }
 }
+
