@@ -32,8 +32,28 @@ import android.content.res.Resources;
 import java.security.cert.X509Certificate;
 import android.app.Activity;
 import javax.net.ssl.HttpsURLConnection;
+import java.security.SecureRandom;
 
 import java.util.Arrays;
+/*
+import android.app.DownloadManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.security.NetworkSecurityPolicy;
+import android.security.net.config.ApplicationConfig;
+import java.security.GeneralSecurityException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import com.android.internal.util.ArrayUtils;
+*/
 /*
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -92,7 +112,7 @@ public class HttpsMaker {
 
         // Create an SSLContext that uses our TrustManager
         SSLContext context = SSLContext.getInstance("TLSv1.2");
-        context.init(null, tmf.getTrustManagers(), null);
+        context.init(null, tmf.getTrustManagers(), new SecureRandom());
 
         URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
@@ -105,5 +125,21 @@ public class HttpsMaker {
         }
         return conn;
     }
+    /*
+    @Override
+    public SSLContext getSSLContextForPackage(Context context, String packageName)
+            throws GeneralSecurityException {
+        ApplicationConfig appConfig;
+        try {
+            appConfig = NetworkSecurityPolicy.getApplicationConfigForPackage(context, packageName);
+        } catch (NameNotFoundException e) {
+            // Unknown package -- fallback to the default SSLContext
+            return SSLContext.getDefault();
+        }
+        SSLContext ctx = SSLContext.getInstance("TLS");
+        ctx.init(null, new TrustManager[] {appConfig.getTrustManager()}, null);
+        return ctx;
+    }
+    */
 }
 
