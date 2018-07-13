@@ -66,8 +66,10 @@ public class HttpsMaker {
         Certificate ca;
         System.out.println("Processing trusted_roots for x509...");
         try {
-          ca = cf.generateCertificate(caInput);
-          System.out.println("x509 ca=" + ((X509Certificate) ca).getSubjectDN());
+            while(caInput.available() > 0){
+                ca = cf.generateCertificate(caInput);
+                System.out.println("x509 ca=" + ((X509Certificate) ca).getSubjectDN());
+            }
         } finally {
           caInput.close();
         }
