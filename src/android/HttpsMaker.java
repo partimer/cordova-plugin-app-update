@@ -65,6 +65,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import android.security.NetworkSecurityPolicy;
 import android.security.net.config.ApplicationConfig;
 import android.content.pm.PackageManager.NameNotFoundException;
+import java.security.GeneralSecurityException;
 
 public class HttpsMaker {
     public static SSLContext getSSLContextForPackage(Context context, String packageName)
