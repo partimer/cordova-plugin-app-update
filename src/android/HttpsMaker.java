@@ -55,19 +55,21 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import com.android.internal.util.ArrayUtils;
 */
-/*
+
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-*/
+
+/*
 import android.security.NetworkSecurityPolicy;
 import android.security.net.config.ApplicationConfig;
 import android.content.pm.PackageManager.NameNotFoundException;
 import java.security.GeneralSecurityException;
-
+*/
 public class HttpsMaker {
+    /*
     public static SSLContext getSSLContextForPackage(Context context, String packageName)
             throws GeneralSecurityException {
         ApplicationConfig appConfig;
@@ -81,9 +83,9 @@ public class HttpsMaker {
         ctx.init(null, new TrustManager[] {appConfig.getTrustManager()}, null);
         return ctx;
     }
-    
+    */
     public static HttpURLConnection openHttpsConnection(String path, Context mContext) throws Exception {
-/*        
+        
         // Ensure upto date      
         try {
             ProviderInstaller.installIfNeeded(mContext);
@@ -94,8 +96,8 @@ public class HttpsMaker {
         } catch (GooglePlayServicesNotAvailableException e) {
             Log.e("SecurityException", "Google Play Services not available.");
         }
-  */      
-/*        // Get resource id
+       
+        // Get resource id
         int trusted_id = mContext.getResources().getIdentifier("trusted_roots", "raw", mContext.getPackageName());
 
         // Create a KeyStore containing our trusted CAs
@@ -132,7 +134,7 @@ public class HttpsMaker {
         // Create an SSLContext that uses our TrustManager
         SSLContext context = SSLContext.getInstance("TLSv1.2");
         context.init(null, tmf.getTrustManagers(), new SecureRandom());
-*/
+
         SSLContext context = HttpsMaker.getSSLContextForPackage(mContext, mContext.getPackageName());
         URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
