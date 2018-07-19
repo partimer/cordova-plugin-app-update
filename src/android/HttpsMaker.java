@@ -130,11 +130,11 @@ public class HttpsMaker {
         String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
         tmf.init(keyStore);
-
+/*
         // Create an SSLContext that uses our TrustManager
         SSLContext context = SSLContext.getInstance("TLSv1.2");
         context.init(null, tmf.getTrustManagers(), new SecureRandom());
-
+*/
         SSLContext context = HttpsMaker.getSSLContextForPackage(mContext, mContext.getPackageName());
         URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
