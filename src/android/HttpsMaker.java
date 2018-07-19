@@ -91,13 +91,11 @@ public class HttpsMaker implements KeyChainAliasCallback {
     public static CordovaWebView webView;
     public static CordovaInterface cordova;
     protected static CordovaPreferences preferences;
-    private static String serviceName;
     
-    public static void initialize ( CordovaWebView webViewP, CordovaInterface cordovaP, CordovaPreferences preferencesP, String serviceNameP ) {
+    public static void initialize ( CordovaWebView webViewP, CordovaInterface cordovaP, CordovaPreferences preferencesP) {
         webView = webViewP;
         cordova = cordovaP;
         preferences =preferencesP;
-        serviceName = serviceNameP;
     }
     
     @Override
