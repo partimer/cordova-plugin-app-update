@@ -28,7 +28,7 @@ public class CheckAppUpdate extends CordovaPlugin {
 
         if (action.equals("checkAppUpdate")) {
             verifyStoragePermissions();
-            HttpsMaker.initialize( webView, cordova, preferences, serviceName);           
+            HttpsMaker.initialize( webView, cordova, preferences );           
             getUpdateManager(args, callbackContext).checkUpdate();
             return true;
         }
