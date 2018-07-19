@@ -43,6 +43,9 @@ import android.security.KeyChain;
 import android.security.KeyChainAliasCallback;
 import android.net.Uri;
 import android.net.Uri.Builder;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
 
 import java.util.Arrays;
 
@@ -80,6 +83,17 @@ import java.security.GeneralSecurityException;
 */
 public class HttpsMaker implements KeyChainAliasCallback {
     public static final String SP_KEY_ALIAS = "SP_KEY_ALIAS";
+    public static CordovaWebView webView;
+    public static CordovaInterface cordova;
+    protected static CordovaPreferences preferences;
+    private static String serviceName;
+    
+    public static void initialize ( CordovaWebView webViewP, CordovaInterface cordovaP, CordovaPreferences preferencesP, String serviceNameP ) {
+        webView = webViewP;
+        cordova = cordovaP;
+        preferences =preferencesP;
+        serviceName = serviceNameP;
+    }
     
     @Override
     public void alias(String alias) {
@@ -181,13 +195,26 @@ public class HttpsMaker implements KeyChainAliasCallback {
             Uri.parse(path), // Full URI
             DEFAULT_ALIAS);
         */
+        /*
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         KeyManager[] km = kmf.getKeyManagers();
+        
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
+        final String alias = sp.getString(SP_KEY_ALIAS, null);
+        
+        PrivateKey pk = KeyChain.getPrivateKey(mContext, alias);
+        X509Certificate[] cert = KeyChain.getCertificateChain(mContext, alias);
+        
+        KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
+        */
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
+        kmf.init(keyStore, "".toCharArray());
         
         // Create an SSLContext that uses our TrustManager
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         //context.init(null, tmf.getTrustManagers(), new SecureRandom());
-        sslContext.init(km, null, null);
+        sslContext.init(kmf.getKeyManagers(), null, null);
         /*
         SSLContext context = HttpsMaker.getSSLContextForPackage(mContext, mContext.getPackageName());
         */
