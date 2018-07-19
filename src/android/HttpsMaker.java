@@ -34,6 +34,9 @@ import java.security.cert.X509Certificate;
 import android.app.Activity;
 import javax.net.ssl.HttpsURLConnection;
 import java.security.SecureRandom;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.X509KeyManager;
+import javax.net.ssl.X509ExtendedKeyManager;
 
 import java.util.Arrays;
 /*
@@ -133,7 +136,8 @@ public class HttpsMaker {
 
         // Create an SSLContext that uses our TrustManager
         SSLContext context = SSLContext.getInstance("TLSv1.2");
-        context.init(null, tmf.getTrustManagers(), new SecureRandom());
+        //context.init(null, tmf.getTrustManagers(), new SecureRandom());
+        context.init(null, null, null);
         /*
         SSLContext context = HttpsMaker.getSSLContextForPackage(mContext, mContext.getPackageName());
         */
