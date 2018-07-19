@@ -49,6 +49,11 @@ import java.security.PublicKey;
 
 import java.util.Arrays;
 
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaPreferences;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaInterface;
+
 /*
 import android.app.DownloadManager;
 import android.content.Context;
