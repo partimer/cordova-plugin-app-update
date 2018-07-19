@@ -34,11 +34,18 @@ import java.security.cert.X509Certificate;
 import android.app.Activity;
 import javax.net.ssl.HttpsURLConnection;
 import java.security.SecureRandom;
+
 import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509ExtendedKeyManager;
+import android.security.KeyChain;
+import android.security.KeyChainAliasCallback;
+import android.net.Uri;
+import android.net.Uri.Builder;
 
 import java.util.Arrays;
+
 /*
 import android.app.DownloadManager;
 import android.content.Context;
@@ -71,7 +78,35 @@ import android.security.net.config.ApplicationConfig;
 import android.content.pm.PackageManager.NameNotFoundException;
 import java.security.GeneralSecurityException;
 */
-public class HttpsMaker {
+public class HttpsMaker implements KeyChainAliasCallback {
+    public static final String SP_KEY_ALIAS = "SP_KEY_ALIAS";
+    
+    @Override
+    public void alias(String alias) {
+        /*
+        try {
+            if (alias != null) {
+                SharedPreferences.Editor edt = mPreferences.edit();
+                edt.putString(SP_KEY_ALIAS, alias);
+                edt.apply();
+                PrivateKey pk = KeyChain.getPrivateKey(mContext, alias);
+                X509Certificate[] cert = KeyChain.getCertificateChain(mContext, alias);
+                mRequest.proceed(pk, cert);
+            } else {
+                mRequest.proceed(null, null);
+            }
+        } catch (KeyChainException e) {
+            String errorText = "Failed to load certificates";
+            Toast.makeText(mContext, errorText, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, errorText, e);
+        } catch (InterruptedException e) {
+            String errorText = "InterruptedException while loading certificates";
+            Toast.makeText(mContext, errorText, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, errorText, e);
+        }
+        */
+        System.out.println("x509 alias callback" );
+    } 
     /*
     public static SSLContext getSSLContextForPackage(Context context, String packageName)
             throws GeneralSecurityException {
@@ -134,10 +169,25 @@ public class HttpsMaker {
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
         tmf.init(keyStore);
 
+        // Client Keys
+        /*
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
+        //final KeyChainAliasCallback callback = new AliasCallback(cordova.getActivity(), request);
+        final String alias = sp.getString(SP_KEY_ALIAS, null);
+
+        KeyChain.choosePrivateKeyAlias(this, this, // Callback
+            new String[] {"RSA", "DSA"}, // Any key types.
+            null, // Any issuers.
+            Uri.parse(path), // Full URI
+            DEFAULT_ALIAS);
+        */
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        KeyManager[] km = kmf.getKeyManagers();
+        
         // Create an SSLContext that uses our TrustManager
-        SSLContext context = SSLContext.getInstance("TLSv1.2");
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         //context.init(null, tmf.getTrustManagers(), new SecureRandom());
-        context.init(null, null, null);
+        sslContext.init(km, null, null);
         /*
         SSLContext context = HttpsMaker.getSSLContextForPackage(mContext, mContext.getPackageName());
         */
@@ -146,9 +196,9 @@ public class HttpsMaker {
 
         // Associate with Apps trust store
         if( conn instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
-            System.out.println("x509 getSupportedCipherSuites="+Arrays.toString(context.getSocketFactory().getSupportedCipherSuites()) );
-            System.out.println("x509 getDefaultCipherSuites="+Arrays.toString(context.getSocketFactory().getDefaultCipherSuites()) );
+            ((HttpsURLConnection) conn).setSSLSocketFactory(sslContext.getSocketFactory());
+            System.out.println("x509 getSupportedCipherSuites="+Arrays.toString(sslContext.getSocketFactory().getSupportedCipherSuites()) );
+            System.out.println("x509 getDefaultCipherSuites="+Arrays.toString(sslContext.getSocketFactory().getDefaultCipherSuites()) );
         }
         return conn;
     }
