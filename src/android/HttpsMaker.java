@@ -210,8 +210,10 @@ public class HttpsMaker implements KeyChainAliasCallback {
         
         KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
         */
+        
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
+        //KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
+        KeyStore ks = KeyStore.getInstance("PKCS12");
         kmf.init(ks, "".toCharArray());
         
         // Create an SSLContext that uses our TrustManager
