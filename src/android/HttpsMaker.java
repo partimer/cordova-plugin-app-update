@@ -21,38 +21,45 @@ import java.util.HashMap;
 
 import 	java.nio.charset.StandardCharsets;
 
-
-import java.security.cert.CertificateFactory;
-import java.security.cert.Certificate;
+import java.util.Arrays;
 import java.io.BufferedInputStream;
+import android.app.Activity;
+import android.content.res.Resources;
+
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import java.security.KeyStore;
-import javax.net.ssl.SSLContext;
-import android.content.res.Resources;
-import java.security.cert.X509Certificate;
-import android.app.Activity;
-import javax.net.ssl.HttpsURLConnection;
-import java.security.SecureRandom;
 
+import java.security.KeyStore;
+import java.security.cert.CertificateFactory;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.security.SecureRandom;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import android.security.KeyChain;
+import android.security.KeyChainAliasCallback;
+import android.security.KeyChainException;
+import java.security.Principal;
+
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509ExtendedKeyManager;
-import android.security.KeyChain;
-import android.security.KeyChainAliasCallback;
+
 import android.net.Uri;
 import android.net.Uri.Builder;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
-
-import java.util.Arrays;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaPreferences;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaInterface;
+
+import com.android.mail.utils.LogUtils;
 
 /*
 import android.app.DownloadManager;
@@ -218,7 +225,14 @@ public class HttpsMaker implements KeyChainAliasCallback {
         */
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
         final String alias = sp.getString(SP_KEY_ALIAS, null);
-        KeyManager keyManager = SSLUtils.KeyChainKeyManager.fromAlias(mContext, alias);
+        KeyManager keyManager = null;
+        try {
+            keyManager = SSLUtils.KeyChainKeyManager.fromAlias(mContext, alias);
+        } catch (Exception e) {
+            System.out.println("x509 CertificateException loading Client Key Manager" );
+            e.printStackTrace();
+        }
+        
         
         // Create an SSLContext that uses our TrustManager
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
@@ -305,15 +319,20 @@ public class HttpsMaker implements KeyChainAliasCallback {
             } catch (InterruptedException e) {
                 logError(alias, "private key", e);
                 throw new CertificateException(e);
-            }
+            } 
 
             if (certificateChain == null || privateKey == null) {
                 throw new CertificateException("Can't access certificate from keystore");
             }
-
+            try {
+                certificateChain = KeyChain.getCertificateChain(context, alias);
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return new KeyChainKeyManager(alias, certificateChain, privateKey);
         }
-
+        
         private static void logError(String alias, String type, Exception ex) {
             // Avoid logging PII when explicit logging is not on.
             if (LOG_ENABLED) {
@@ -322,7 +341,7 @@ public class HttpsMaker implements KeyChainAliasCallback {
                 LogUtils.e(TAG, "Unable to retrieve " + type + " due to " + ex);
             }
         }
-
+        
         private KeyChainKeyManager(
                 String clientAlias, X509Certificate[] certificateChain, PrivateKey privateKey) {
             mClientAlias = clientAlias;
