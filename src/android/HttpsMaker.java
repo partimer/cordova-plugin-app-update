@@ -59,8 +59,6 @@ import org.apache.cordova.CordovaPreferences;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaInterface;
 
-import com.android.mail.utils.LogUtils;
-
 /*
 import android.app.DownloadManager;
 import android.content.Context;
