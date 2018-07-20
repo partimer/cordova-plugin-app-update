@@ -210,16 +210,21 @@ public class HttpsMaker implements KeyChainAliasCallback {
         
         KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
         */
-        
+        /*
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         //KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
         KeyStore ks = KeyStore.getInstance("PKCS12");
         kmf.init(ks, "".toCharArray());
+        */
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
+        final String alias = sp.getString(SP_KEY_ALIAS, null);
+        KeyManager keyManager = SSLUtils.KeyChainKeyManager.fromAlias(mContext, alias);
         
         // Create an SSLContext that uses our TrustManager
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         //context.init(null, tmf.getTrustManagers(), new SecureRandom());
-        sslContext.init(kmf.getKeyManagers(), null, null);
+        sslContext.init(new KeyManager[]{keyManager}, null, null);
+        
         /*
         SSLContext context = HttpsMaker.getSSLContextForPackage(mContext, mContext.getPackageName());
         */
@@ -234,5 +239,121 @@ public class HttpsMaker implements KeyChainAliasCallback {
         }
         return conn;
     }
+    
+    private static abstract class StubKeyManager extends X509ExtendedKeyManager {
+        @Override public abstract String chooseClientAlias(
+                String[] keyTypes, Principal[] issuers, Socket socket);
+
+        @Override public abstract X509Certificate[] getCertificateChain(String alias);
+
+        @Override public abstract PrivateKey getPrivateKey(String alias);
+
+
+        // The following methods are unused.
+
+        @Override
+        public final String chooseServerAlias(
+                String keyType, Principal[] issuers, Socket socket) {
+            // not a client SSLSocket callback
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public final String[] getClientAliases(String keyType, Principal[] issuers) {
+            // not a client SSLSocket callback
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public final String[] getServerAliases(String keyType, Principal[] issuers) {
+            // not a client SSLSocket callback
+            throw new UnsupportedOperationException();
+        }
+    }
+/**
+     * A {@link KeyManager} that reads uses credentials stored in the system {@link KeyChain}.
+     */
+    public static class KeyChainKeyManager extends StubKeyManager {
+        private final String mClientAlias;
+        private final X509Certificate[] mCertificateChain;
+        private final PrivateKey mPrivateKey;
+
+        /**
+         * Builds an instance of a KeyChainKeyManager using the given certificate alias.
+         * If for any reason retrieval of the credentials from the system {@link KeyChain} fails,
+         * a {@code null} value will be returned.
+         */
+        public static KeyChainKeyManager fromAlias(Context context, String alias)
+                throws CertificateException {
+            X509Certificate[] certificateChain;
+            try {
+                certificateChain = KeyChain.getCertificateChain(context, alias);
+            } catch (KeyChainException e) {
+                logError(alias, "certificate chain", e);
+                throw new CertificateException(e);
+            } catch (InterruptedException e) {
+                logError(alias, "certificate chain", e);
+                throw new CertificateException(e);
+            }
+
+            PrivateKey privateKey;
+            try {
+                privateKey = KeyChain.getPrivateKey(context, alias);
+            } catch (KeyChainException e) {
+                logError(alias, "private key", e);
+                throw new CertificateException(e);
+            } catch (InterruptedException e) {
+                logError(alias, "private key", e);
+                throw new CertificateException(e);
+            }
+
+            if (certificateChain == null || privateKey == null) {
+                throw new CertificateException("Can't access certificate from keystore");
+            }
+
+            return new KeyChainKeyManager(alias, certificateChain, privateKey);
+        }
+
+        private static void logError(String alias, String type, Exception ex) {
+            // Avoid logging PII when explicit logging is not on.
+            if (LOG_ENABLED) {
+                LogUtils.e(TAG, "Unable to retrieve " + type + " for [" + alias + "] due to " + ex);
+            } else {
+                LogUtils.e(TAG, "Unable to retrieve " + type + " due to " + ex);
+            }
+        }
+
+        private KeyChainKeyManager(
+                String clientAlias, X509Certificate[] certificateChain, PrivateKey privateKey) {
+            mClientAlias = clientAlias;
+            mCertificateChain = certificateChain;
+            mPrivateKey = privateKey;
+        }
+
+
+        @Override
+        public String chooseClientAlias(String[] keyTypes, Principal[] issuers, Socket socket) {
+            if (LOG_ENABLED) {
+                LogUtils.i(TAG, "Requesting a client cert alias for " + Arrays.toString(keyTypes));
+            }
+            return mClientAlias;
+        }
+
+        @Override
+        public X509Certificate[] getCertificateChain(String alias) {
+            if (LOG_ENABLED) {
+                LogUtils.i(TAG, "Requesting a client certificate chain for alias [" + alias + "]");
+            }
+            return mCertificateChain;
+        }
+
+        @Override
+        public PrivateKey getPrivateKey(String alias) {
+            if (LOG_ENABLED) {
+                LogUtils.i(TAG, "Requesting a client private key for alias [" + alias + "]");
+            }
+            return mPrivateKey;
+        }
+}    
 }
 
