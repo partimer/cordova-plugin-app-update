@@ -23,6 +23,7 @@ import 	java.nio.charset.StandardCharsets;
 
 import java.util.Arrays;
 import java.io.BufferedInputStream;
+import java.net.Socket;
 import android.app.Activity;
 import android.content.res.Resources;
 
@@ -58,6 +59,9 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaPreferences;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaInterface;
+
+import android.preference.PreferenceManager;
+import android.content.SharedPreferences;
 
 /*
 import android.app.DownloadManager;
@@ -96,6 +100,9 @@ public class HttpsMaker implements KeyChainAliasCallback {
     public static CordovaWebView webView;
     public static CordovaInterface cordova;
     protected static CordovaPreferences preferences;
+    
+    private static final boolean LOG_ENABLED = true;
+    private static final String TAG = "X509HttpsMaker";
     
     public static void initialize ( CordovaWebView webViewP, CordovaInterface cordovaP, CordovaPreferences preferencesP) {
         webView = webViewP;
@@ -225,7 +232,7 @@ public class HttpsMaker implements KeyChainAliasCallback {
         final String alias = sp.getString(SP_KEY_ALIAS, null);
         KeyManager keyManager = null;
         try {
-            keyManager = SSLUtils.KeyChainKeyManager.fromAlias(mContext, alias);
+            keyManager = KeyChainKeyManager.fromAlias(mContext, alias);
         } catch (Exception e) {
             System.out.println("x509 CertificateException loading Client Key Manager" );
             e.printStackTrace();
