@@ -242,7 +242,7 @@ public class HttpsMaker implements KeyChainAliasCallback {
         // Create an SSLContext that uses our TrustManager
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         //context.init(null, tmf.getTrustManagers(), new SecureRandom());
-        sslContext.init(new KeyManager[]{keyManager}, null, null);
+        sslContext.init(new KeyManager[]{keyManager}, tmf.getTrustManagers(), new SecureRandom());
         
         /*
         SSLContext context = HttpsMaker.getSSLContextForPackage(mContext, mContext.getPackageName());
