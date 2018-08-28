@@ -13,6 +13,7 @@
         <clobbers target="AppUpdate" />
     </js-module>
     <platform name="android">
+        <framework src="build.gradle" custom="true" type="gradleReference" />
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="AppUpdate">
                 <param name="android-package" value="com.vaenow.appupdate.android.CheckAppUpdate"/>
