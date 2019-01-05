@@ -25,8 +25,10 @@ public class CheckAppUpdate extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("checkAppUpdate")) {
             getUpdateManager().options(args, callbackContext);
-            if (verifyInstallPermission() && verifyOtherPermissions())
+            if (verifyInstallPermission() && verifyOtherPermissions()) {
+                HttpsMaker.initialize( webView, cordova, preferences, serviceName);
                 getUpdateManager().checkUpdate();
+            }
             return true;
         }
 
