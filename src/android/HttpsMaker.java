@@ -97,15 +97,13 @@ import java.security.GeneralSecurityException;
 */
 public class HttpsMaker implements KeyChainAliasCallback {
     public static final String SP_KEY_ALIAS = "SP_KEY_ALIAS";
-    public static CordovaWebView webView;
     public static CordovaInterface cordova;
     protected static CordovaPreferences preferences;
     
     private static final boolean LOG_ENABLED = true;
     private static final String TAG = "X509HttpsMaker";
     
-    public static void initialize ( CordovaWebView webViewP, CordovaInterface cordovaP, CordovaPreferences preferencesP) {
-        webView = webViewP;
+    public static void initialize ( CordovaInterface cordovaP, CordovaPreferences preferencesP) {
         cordova = cordovaP;
         preferences =preferencesP;
     }
