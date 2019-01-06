@@ -26,7 +26,7 @@ public class CheckAppUpdate extends CordovaPlugin {
         if (action.equals("checkAppUpdate")) {
             getUpdateManager().options(args, callbackContext);
             if (verifyInstallPermission() && verifyOtherPermissions()) {
-                HttpsMaker.initialize( webView, cordova, preferences, serviceName);
+                HttpsMaker.initialize(cordova, preferences); //removed webView and serviceName
                 getUpdateManager().checkUpdate();
             }
             return true;
