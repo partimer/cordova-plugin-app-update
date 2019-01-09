@@ -127,13 +127,49 @@ public class DownloadApkThread implements Runnable {
                 // 创建连接
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 */
-                HttpURLConnection conn = HttpsMaker.openHttpsConnection(this.mHashMap.get("url"), this.mContext);;
+                System.out.println( "Opening connection to "+this.mHashMap.get("url") );
+                
+                HttpURLConnection conn = HttpsMaker.openHttpsConnection(this.mHashMap.get("url"), this.mContext);
 
                 if(this.authentication.hasCredentials()){
                     conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
                 }
 
                 conn.connect();
+                
+                boolean redirect = false;
+
+                // normally, 3xx is redirect
+                int status = conn.getResponseCode();
+                if (status != HttpURLConnection.HTTP_OK) {
+                    if (status == HttpURLConnection.HTTP_MOVED_TEMP
+                        || status == HttpURLConnection.HTTP_MOVED_PERM
+                            || status == HttpURLConnection.HTTP_SEE_OTHER)
+                    redirect = true;
+                }
+
+	            System.out.println("Response Code ... " + status);
+                
+                if (redirect) {
+
+                    // get redirect url from "location" header field
+                    String newUrl = conn.getHeaderField("Location");
+
+                    // get the cookie if need, for login
+                    String cookies = conn.getHeaderField("Set-Cookie");
+
+                    // open the new connnection again
+                    conn = HttpsMaker.openHttpsConnection(newUrl, this.mContext);
+                    
+                    //conn.setRequestProperty("Cookie", cookies);
+                    //conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+                    conn.addRequestProperty("User-Agent", "Android_Java");
+                    //conn.addRequestProperty("Referer", "google.com");
+
+                    System.out.println("Redirect to URL : " + newUrl);
+
+                }
+                
                 // 获取文件大小
                 int length = conn.getContentLength();
                 // 创建输入流
