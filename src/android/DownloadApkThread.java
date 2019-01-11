@@ -76,99 +76,67 @@ public class DownloadApkThread implements Runnable {
     public void cancelBuildUpdate() {
         this.cancelUpdate = true;
     }
-    /*
-    private HttpsURLConnection getOpenConnection(String path) throws Exception {
-        // Get resource id
-        int trusted_id = this.mContext.getResources().getIdentifier("trusted_roots", "raw", this.mContext.getPackageName());
-        
-        // Load CAs from an InputStream
-        // (could be from a resource or ByteArrayInputStream or ...)
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        
-        // From res/raw/trusted_roots
-        InputStream caInput = new BufferedInputStream(this.mContext.getResources().openRawResource(trusted_id));
-        Certificate ca;
-        try {
-            ca = cf.generateCertificate(caInput);
-            System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
-        } finally {
-            caInput.close();
-        }
 
-        // Create a KeyStore containing our trusted CAs
-        String keyStoreType = KeyStore.getDefaultType();
-        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        keyStore.load(null, null);
-        keyStore.setCertificateEntry("ca", ca);
-
-        // Create a TrustManager that trusts the CAs in our KeyStore
-        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-        tmf.init(keyStore);
-
-        // Create an SSLContext that uses our TrustManager
-        SSLContext context = SSLContext.getInstance("TLS");
-        context.init(null, tmf.getTrustManagers(), null);
-        
-        URL url = new URL(path);
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
-
-        // Associate with Apps trust store
-        conn.setSSLSocketFactory(context.getSocketFactory());
-        return conn;
-    }
-    */
     private void downloadAndInstall() {
         try {
             // 判断SD卡是否存在，并且是否具有读写权限
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                /*// 获得存储卡的路径
-                URL url = new URL(mHashMap.get("url"));
-                // 创建连接
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                */
-                System.out.println( "Opening connection to "+this.mHashMap.get("url") );
                 
-                HttpURLConnection conn = HttpsMaker.openHttpsConnection(this.mHashMap.get("url"), this.mContext);
-
-                if(this.authentication.hasCredentials()){
-                    conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
-                }
-
-                conn.connect();
-                
+                // Coomon variables for the loop
+                HttpURLConnection conn;
                 boolean redirect = false;
-
-                // normally, 3xx is redirect
-                int status = conn.getResponseCode();
-                if (status != HttpURLConnection.HTTP_OK) {
-                    if (status == HttpURLConnection.HTTP_MOVED_TEMP
-                        || status == HttpURLConnection.HTTP_MOVED_PERM
-                            || status == HttpURLConnection.HTTP_SEE_OTHER)
-                    redirect = true;
-                }
-
-	            System.out.println("Response Code ... " + status);
+                String url = this.mHashMap.get("url");
+                String cookies = "";
                 
-                if (redirect) {
-
-                    // get redirect url from "location" header field
-                    String newUrl = conn.getHeaderField("Location");
-
-                    // get the cookie if need, for login
-                    String cookies = conn.getHeaderField("Set-Cookie");
-
-                    // open the new connnection again
-                    conn = HttpsMaker.openHttpsConnection(newUrl, this.mContext);
+                
+                // Loop until the redirect is resolved
+                do {
+                    System.out.println( "Opening connection to "+url );
                     
+                    conn = HttpsMaker.openHttpsConnection(url, this.mContext);
+                    
+                    // Setup header
+                    if(this.authentication.hasCredentials()){
+                        conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
+                    }
+
+                                            
                     //conn.setRequestProperty("Cookie", cookies);
                     //conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-                    conn.addRequestProperty("User-Agent", "Android_Java");
+                    conn.addRequestProperty("User-Agent", "Android_Java_CordovaCheckAppUpdate");
                     //conn.addRequestProperty("Referer", "google.com");
+                    
+                    // Attempt to open a connection
+                    conn.setDoInput(true);
+                    conn.connect();
+                    
+                    // normally, 3xx is redirect
+                    int status = conn.getResponseCode();
+                    
+                    redirect = false;
+                    if (status != HttpURLConnection.HTTP_OK) {
+                        if (status == HttpURLConnection.HTTP_MOVED_TEMP
+                            || status == HttpURLConnection.HTTP_MOVED_PERM
+                            || status == HttpURLConnection.HTTP_SEE_OTHER)
+                            redirect = true;
+                    }
 
-                    System.out.println("Redirect to URL : " + newUrl);
+                    System.out.println("Response Code ... " + status);
+                    
+                    // Check fields need to be updated prior to looping
+                    if (redirect) {
 
-                }
+                        // get redirect url from "location" header field
+                        url = conn.getHeaderField("Location");
+
+                        // get the cookie if need, for login
+                        cookies = conn.getHeaderField("Set-Cookie");
+
+                        System.out.println("Redirect to URL : " + url);
+                    }
+                    
+                    // Loop again if we have been redirected
+                } while(redirect);
                 
                 // 获取文件大小
                 int length = conn.getContentLength();
